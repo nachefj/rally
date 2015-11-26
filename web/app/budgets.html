@@ -1,0 +1,21 @@
+<div class="container" ng-controller="budgetsController">
+  <div class="page-header">
+    <h1>
+      Budgets
+      <a id="addNewLink" ng-show="selectedMonth" class="btn btn-primary btn-xs" data-toggle="popover" title="New Budget" data-contentwrapper="#newPopoverContent">Add New ...</a>
+    </h1>
+  </div>
+
+  <ul id="budgetList" class="list-group" style="font-size: 18px;">
+    <li id="budgetItem{{budget.id}}" ng-repeat="budget in budgets" ng-click="selectBudget(budget.id)" class="list-group-item">{{budget.date | date:'MMMM yyyy'}}</li>
+  </ul>
+
+  <div id="newPopoverContent" style="display: none;">
+    <div class="form-inline">
+      <select class="form-control input-sm" ng-model="selectedMonth" ng-options="month.name for month in months track by month.id"></select>
+      <select class="form-control input-sm" ng-model="selectedYear" ng-options="year.year for year in years track by year.year"></select>
+      <button class="btn btn-primary btn-xs" ng-click="createBudget()">Add</button>
+    </div>
+  </div>
+  
+</div>

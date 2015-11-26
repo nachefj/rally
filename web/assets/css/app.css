@@ -1,0 +1,25 @@
+#budgetList {
+  
+}
+
+#budgetList li {
+  cursor: pointer;
+}
+
+table.budgetSummary {
+
+}
+
+table.budgetSummary tr th {
+  font-size: 11px;
+  font-weight: normal;
+}
+
+table.budgetSummary tr td {
+  font-size: 21px;
+  font-weight: normal;
+}
+
+.page-header {
+  margin-top: 0px;
+}

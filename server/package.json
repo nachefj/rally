@@ -1,0 +1,9 @@
+{
+    "name": "pennies-api",
+    "main": "server.js",
+    "dependencies": {
+        "express": "latest",
+        "mysql": "latest",
+        "body-parser": "latest"
+    }
+}
