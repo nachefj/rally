@@ -1,25 +1,71 @@
-#budgetList {
-  
-}
-
-#budgetList li {
-  cursor: pointer;
-}
-
-table.budgetSummary {
-
-}
-
-table.budgetSummary tr th {
-  font-size: 11px;
-  font-weight: normal;
-}
-
-table.budgetSummary tr td {
-  font-size: 21px;
-  font-weight: normal;
-}
-
 .page-header {
   margin-top: 0px;
+}
+
+body {
+  color: #333333;
+  font-family: futura;
+}
+
+h1 {
+  font-size: 70px;
+  font-family: garamond;
+  margin-bottom: 16px;
+}
+
+h2 {
+  font-size: 48px;
+  font-family: garamond;
+  margin-bottom: 16px;
+}
+
+#grandTotalBoard {
+  background-color: #EFEFEF;
+  border-radius: 5px;
+}
+
+#grandTotalScore {
+  font-size: 60px;
+  text-align: center;
+  font-family: futura;
+}
+
+#topContenderContainer {
+  margin: 20px;
+}
+
+.scoreBar {
+  margin-left: 10px;
+  height: 90px;
+}
+
+.teamName {
+  font-family: garamond;
+  font-size: 26px;
+  text-align: right;
+}
+
+.teamScore {
+  font-size: 32px;
+  text-align: right;
+}
+
+.firstBackground {
+  background-color: #77DD77;
+}
+
+.secondBackground {
+  background-color: #779ECB;
+}
+
+.thirdBackground {
+  background-color: #FFB347;
+}
+
+.fourthBackground {
+  background-color: #CB99C9;
+}
+
+.fifthBackground {
+  background-color: #FFD1DC;
 }

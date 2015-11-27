@@ -4,8 +4,16 @@ app.constant('appConfig', {apiUrl: 'http://localhost:3000/api'});
 app.config(function($routeProvider) {
   $routeProvider
     .when('/', {
-      templateUrl : 'app/budgets.html',
-      controller  : 'budgetsController'
+      templateUrl : 'app/login.html',
+      controller  : 'loginController'
+    })
+    .when('/score', {
+      templateUrl : 'app/score.html',
+      controller  : 'scoreController'
+    })
+    .when('/scoreboard', {
+      templateUrl : 'app/scoreboard.html',
+      controller  : 'scoreboardController'
     })
     .when('/budgets', {
       templateUrl : 'app/budgets.html',
@@ -16,6 +24,61 @@ app.config(function($routeProvider) {
       controller  : 'budgetController'
     });
 });
+
+app.controller('loginController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
+  function(compile, scope, http, location, appConfig) {
+    
+    scope.onLoginClick = function() {
+      location.path('/score'); //TODO: Add team ID
+    }
+  }
+]);
+
+app.controller('scoreController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
+  function(compile, scope, http, location, appConfig) {
+    
+  }
+]);
+
+app.controller('scoreboardController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
+  function(compile, scope, http, location, appConfig) {
+
+    var SCALE = 0.3;
+    var ANIMATION_TIME = 1000;
+    var ITERATION_TIMEOUT = 10; //MIN 10, MAX 1000
+    var MAX_ITERATIONS = (ANIMATION_TIME/ITERATION_TIMEOUT);
+    
+    var iterationCount = 0;
+    var scoreBars;
+
+    calculateIncrements();
+    increment();
+    
+    function calculateIncrements() {
+      var scoreBars = document.getElementsByClassName("scoreBar");
+
+      for (var i=0; i<scoreBars.length; i++) {
+        var delta = SCALE * (scoreBars[i].getAttribute("data-score")/MAX_ITERATIONS);
+        scoreBars[i].setAttribute("data-increment",  delta);
+      }
+    }
+
+    function increment() {
+      var scoreBars = document.getElementsByClassName("scoreBar");
+      iterationCount++;
+
+      for (var i=0; i<scoreBars.length; i++) {
+        var newWidth = parseFloat(scoreBars[i].style.width) + parseFloat(scoreBars[i].getAttribute("data-increment"));
+        scoreBars[i].style.width = newWidth + "px";
+      }
+
+      if (iterationCount < MAX_ITERATIONS) {
+        window.setTimeout(increment, ITERATION_TIMEOUT);
+      }
+    }
+    
+  }
+]);
 
 app.controller('budgetsController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
   function(compile, scope, http, location, appConfig) {

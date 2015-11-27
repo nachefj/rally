@@ -1,170 +1,58 @@
-<html>
+<div class="container" ng-controller="scoreboardController">
   
-  <head>
-    <style>
-      body {
-        color: #333333;
-        font-family: futura;
-      }
+  <div id="grandTotalBoard">
+    <h1 style="text-align: center;">Grand Total: <span id="grandTotalScore">1362</span></h1>
+  </div>
 
-      h1 {
-        font-size: 70px;
-        font-family: garamond;
-        margin-bottom: 16px;
-      }
+  <h2>Top 5 Contenders</h2>
+  <table id="topContenderContainer">
+    <tr>
+      <td nowrap>
+        <div class="teamName">This is a long team name</div>
+        <div class="teamScore">1000</div>
+      </td>
+      <td>
+        <div data-score="1000" class="scoreBar firstBackground" style="width: 0px;"></div>
+      </td>
+    </tr>
+    <tr>
+      <td nowrap>
+        <div class="teamName">Team 2</div>
+        <div class="teamScore">800</div>
+      </td>
+      <td>
+        <div data-score="800" class="scoreBar secondBackground" style="width: 0px;"></div>
+      </td>
+    </tr>
+    <tr>
+      <td nowrap>
+        <div class="teamName">Team 3</div>
+        <div class="teamScore">245</div>
+      </td>
+      <td>
+        <div data-score="245" class="scoreBar thirdBackground" style="width: 0px;"></div>
+      </td>
+    </tr>
+    <tr>
+      <td nowrap>
+        <div class="teamName">Team 4</div>
+        <div class="teamScore">177</div>
+      </td>
+      <td>
+        <div data-score="177" class="scoreBar fourthBackground" style="width: 0px;"></div>
+      </td>
+    </tr>
+    <tr>
+      <td nowrap>
+        <div class="teamName">Team 5</div>
+        <div class="teamScore">40</div>
+      </td>
+      <td>
+        <div data-score="40" class="scoreBar fifthBackground" style="width: 0px;"></div>
+      </td>
+    </tr>
+  </table>
 
-      h2 {
-        font-size: 48px;
-        font-family: garamond;
-        margin-bottom: 16px;
-      }
+  <h2>The Others</h2>
 
-      #grandTotalBoard {
-        background-color: #EFEFEF;
-        border-radius: 5px;
-      }
-
-      #grandTotalScore {
-        font-size: 60px;
-        text-align: center;
-        font-family: futura;
-      }
-
-      #topContenderContainer {
-        margin: 20px;
-      }
-
-      .scoreBar {
-        margin-left: 10px;
-        height: 90px;
-      }
-
-      .teamName {
-        font-family: garamond;
-        font-size: 26px;
-        text-align: right;
-      }
-
-      .teamScore {
-        font-size: 32px;
-        text-align: right;
-      }
-
-      .firstBackground {
-        background-color: #77DD77;
-      }
-
-      .secondBackground {
-        background-color: #779ECB;
-      }
-
-      .thirdBackground {
-        background-color: #FFB347;
-      }
-
-      .fourthBackground {
-        background-color: #CB99C9;
-      }
-
-      .fifthBackground {
-        background-color: #FFD1DC;
-      }
-    </style>
-  </head>
-
-  <body onload="javascript:loaded();">
-
-    <div id="grandTotalBoard">
-      <h1 style="text-align: center;">Grand Total: <span id="grandTotalScore">1362</span></h1>
-    </div>
-
-    <h2>Top 5 Contenders</h2>
-    <table id="topContenderContainer">
-      <tr>
-        <td nowrap>
-          <div class="teamName">This is a long team name</div>
-          <div class="teamScore">1000</div>
-        </td>
-        <td>
-          <div data-score="1000" class="scoreBar firstBackground" style="width: 0px;"></div>
-        </td>
-      </tr>
-      <tr>
-        <td nowrap>
-          <div class="teamName">Team 2</div>
-          <div class="teamScore">800</div>
-        </td>
-        <td>
-          <div data-score="800" class="scoreBar secondBackground" style="width: 0px;"></div>
-        </td>
-      </tr>
-      <tr>
-        <td nowrap>
-          <div class="teamName">Team 3</div>
-          <div class="teamScore">245</div>
-        </td>
-        <td>
-          <div data-score="245" class="scoreBar thirdBackground" style="width: 0px;"></div>
-        </td>
-      </tr>
-      <tr>
-        <td nowrap>
-          <div class="teamName">Team 4</div>
-          <div class="teamScore">177</div>
-        </td>
-        <td>
-          <div data-score="177" class="scoreBar fourthBackground" style="width: 0px;"></div>
-        </td>
-      </tr>
-      <tr>
-        <td nowrap>
-          <div class="teamName">Team 5</div>
-          <div class="teamScore">40</div>
-        </td>
-        <td>
-          <div data-score="40" class="scoreBar fifthBackground" style="width: 0px;"></div>
-        </td>
-      </tr>
-    </table>
-
-    <h2>The Others</h2>
-  </body>
-
-  <script>
-    var SCALE = 1;
-    var ANIMATION_TIME = 1000;
-    var ITERATION_TIMEOUT = 10; //MIN 10, MAX 1000
-    var MAX_ITERATIONS = (ANIMATION_TIME/ITERATION_TIMEOUT);
-    
-    var iterationCount = 0;
-    var scoreBars;
-
-    function loaded() {
-      calculateIncrements();
-      increment();
-    }
-
-    function calculateIncrements() {
-      var scoreBars = document.getElementsByClassName("scoreBar");
-
-      for (var i=0; i<scoreBars.length; i++) {
-        var delta = SCALE * (scoreBars[i].getAttribute("data-score")/MAX_ITERATIONS);
-        scoreBars[i].setAttribute("data-increment",  delta);
-      }
-    }
-
-    function increment() {
-      var scoreBars = document.getElementsByClassName("scoreBar");
-      iterationCount++;
-
-      for (var i=0; i<scoreBars.length; i++) {
-        var newWidth = parseFloat(scoreBars[i].style.width) + parseFloat(scoreBars[i].getAttribute("data-increment"));
-        scoreBars[i].style.width = newWidth + "px";
-      }
-
-      if (iterationCount < MAX_ITERATIONS) {
-        window.setTimeout(increment, ITERATION_TIMEOUT);
-      }
-    }
-  </script>
-</html>
+</div>
