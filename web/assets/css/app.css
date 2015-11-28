@@ -2,23 +2,6 @@
   margin-top: 0px;
 }
 
-body {
-  color: #333333;
-  font-family: futura;
-}
-
-h1 {
-  font-size: 70px;
-  font-family: garamond;
-  margin-bottom: 16px;
-}
-
-h2 {
-  font-size: 48px;
-  font-family: garamond;
-  margin-bottom: 16px;
-}
-
 #grandTotalBoard {
   background-color: #EFEFEF;
   border-radius: 5px;

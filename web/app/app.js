@@ -7,7 +7,15 @@ app.config(function($routeProvider) {
       templateUrl : 'app/login.html',
       controller  : 'loginController'
     })
-    .when('/score', {
+    .when('/login', {
+      templateUrl : 'app/login.html',
+      controller  : 'loginController'
+    })
+    .when('/register', {
+      templateUrl : 'app/register.html',
+      controller  : 'registerController'
+    })
+    .when('/score/:id', {
       templateUrl : 'app/score.html',
       controller  : 'scoreController'
     })
@@ -29,8 +37,53 @@ app.controller('loginController', ['$compile', '$scope', '$http', '$location', '
   function(compile, scope, http, location, appConfig) {
     
     scope.onLoginClick = function() {
-      location.path('/score'); //TODO: Add team ID
-    }
+      var postResponse = http.post(appConfig.apiUrl + '/login', scope.team);
+      postResponse.success(function(data, status, headers, config) {
+        var team = data.json;
+
+        location.path('/score/'+team.id);
+      });
+      postResponse.error(function(data, status, headers, config) {
+        //TODO: hide popover
+        if (!data) {
+          appUtils.showError('Error registering');
+        } else if (data.err && data.err == "ER_DUP_ENTRY") {
+          appUtils.showError("Team " + scope.team.name + " already exists");
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+    };
+
+  }
+]);
+
+app.controller('registerController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
+  function(compile, scope, http, location, appConfig) {
+
+    scope.onRegisterClick = function() {
+      var postResponse = http.post(appConfig.apiUrl + '/register', scope.team);
+      postResponse.success(function(data, status, headers, config) {
+        var team = data.json;
+
+        location.path('/score/'+team.id);
+      });
+      postResponse.error(function(data, status, headers, config) {
+        //TODO: hide popover
+        if (!data) {
+          appUtils.showError('Error registering');
+        } else if (data.err && data.err == "ER_DUP_ENTRY") {
+          appUtils.showError("Team " + scope.team.name + " already exists");
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+    };
+
   }
 ]);
 

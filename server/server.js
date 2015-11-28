@@ -6,7 +6,7 @@ var mysql      = require('mysql');
 var port                   = process.env.PORT || 3000;
 var mysql_connection_limit = 100;
 var mysql_host             = 'localhost';
-var mysql_database         = 'pennies';
+var mysql_database         = 'rally';
 var mysql_user             = 'root';
 var mysql_password         = '';
 
@@ -33,6 +33,63 @@ var connectionPool = mysql.createPool({
   database        : mysql_database,
   user            : mysql_user,
   password        : mysql_password
+});
+
+router.post('/login', function(req, res) {
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('SELECT id, name, password FROM team WHERE name = ? AND password = ?', [req.body.name, req.body.password], function(err, rows, fields) {
+        if (err) {
+          console.error(err);
+          res.statusCode = 500;
+          res.send({result: 'error', err: err.code});
+        } else {
+          if (rows.length == 0) {
+            res.statusCode = 403;
+            res.send({result: 'error', err: 'Invalid team name or password'});  
+          } else {
+            var team = new Object();
+            team.id = rows[0].id;
+            team.name = rows[0].name;
+            team.password = rows[0].password;
+            res.send({result: 'success', err: '', json: team, length: rows.length});  
+          }
+        }
+
+        connection.release();
+      });
+    }
+  })
+});
+
+router.post('/register', function(req, res) {
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('INSERT INTO team(name, password) VALUES(?, ?)', [req.body.name, req.body.password], function(err, result) {
+        if (err) {
+          console.error(err);
+          res.statusCode = 500;
+          res.send({result: 'error', err: err.code});
+        } else {
+          var team = new Object();
+          team.id = result.insertId;
+          team.name = req.body.name;
+
+          res.send({result: 'success', err: '', json: team, length: 1});   
+        }
+        
+        connection.release();
+      });
+    }
+  })
 });
 
 router.get('/budgets', function(req, res) {
