@@ -98,7 +98,25 @@ router.post('/register', function(req, res) {
   })
 });
 
+function validateRequest(req) {
+  if (!req.body || !req.body.id || !req.body.name || !req.body.password) {
+    return false;
+  }
+
+  if (req.params.id && req.body.id != req.params.id) {
+    return false;
+  }
+
+  return true;
+}
+
 router.post('/score/:id', function(req, res) {
+
+  if (!validateRequest(req)) {
+    res.statusCode = 403;
+    res.send({result: 'error', err: 'invalid request'});
+    return;
+  }
 
   //check if session is valid
   connectionPool.getConnection(function(err, connection) {
