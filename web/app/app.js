@@ -1,11 +1,11 @@
 var app = angular.module('app', ['ngRoute']);
-app.constant('appConfig', {apiUrl: 'http://localhost:3000/api'});
+app.constant('appConfig', {apiUrl: 'http://192.168.70.159:3000/api'});
 
 app.config(function($routeProvider) {
   $routeProvider
     .when('/', {
-      templateUrl : 'app/login.html',
-      controller  : 'loginController'
+      templateUrl : 'app/register.html',
+      controller  : 'registerController'
     })
     .when('/login', {
       templateUrl : 'app/login.html',

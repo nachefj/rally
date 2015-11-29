@@ -42,13 +42,16 @@ router.post('/login', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('SELECT id, name, password FROM team WHERE name = ? AND password = ?', [req.body.name, req.body.password], function(err, rows, fields) {
+      connection.query('SELECT id, name, password FROM team WHERE name = ?', req.body.name, function(err, rows, fields) {
         if (err) {
           console.error(err);
           res.statusCode = 500;
           res.send({result: 'error', err: err.code});
         } else {
           if (rows.length == 0) {
+            res.statusCode = 403;
+            res.send({result: 'error', err: 'Invalid team name or password'});  
+          } else if (rows[0].password != req.body.password) {
             res.statusCode = 403;
             res.send({result: 'error', err: 'Invalid team name or password'});  
           } else {

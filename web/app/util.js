@@ -1,5 +1,9 @@
 var appUtils = {
-  showError: function(errorMessage) {
+  showError: function(errorMessage, autoDismiss) {
+    if (typeof autoDismiss == "undefined") {
+      autoDismiss = true;
+    }
+
     if (!errorMessage) {
       $('#error').text('Unknown Error');
     } else if (errorMessage == "ECONNREFUSED") {
@@ -8,6 +12,23 @@ var appUtils = {
       $('#error').text(errorMessage);
     }
     
-    $('#errorContainer').show();
+    $('#errorContainer').fadeIn();
+
+    if (autoDismiss) {
+      window.setTimeout(function () {$('#errorContainer').fadeOut();}, 2000);
+    }
+  },
+
+  checkLocalStorage: function() {
+    if(typeof(Storage) == "undefined") {
+        appUtils.showError("LocalStorage is required, run this on a better browser!", false);
+        return false;
+    } else {
+      return true;
+    }
+  },
+
+  checkSession: function() {
+    
   }
 }
