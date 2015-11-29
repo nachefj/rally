@@ -35,6 +35,33 @@ var connectionPool = mysql.createPool({
   password        : mysql_password
 });
 
+function validateSession(session) {
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('SELECT id, name, password FROM team WHERE name = ?', session.name, function(err, rows, fields) {
+        if (err) {
+          console.error(err);
+          return false;
+        } else {
+          if (rows.length == 0) {
+            return false;
+          } else if (rows[0].password != session.password) {
+            return false
+          } 
+          
+          return true;
+        }
+
+        connection.release();
+      });
+    }
+  });
+}
+
 router.post('/login', function(req, res) {
   connectionPool.getConnection(function(err, connection) {
     if (err) {
@@ -76,6 +103,8 @@ router.post('/register', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
+      var teamName = req.body.name;
+
       connection.query('INSERT INTO team(name, password) VALUES(?, ?)', [req.body.name, req.body.password], function(err, result) {
         if (err) {
           console.error(err);
@@ -84,7 +113,8 @@ router.post('/register', function(req, res) {
         } else {
           var team = new Object();
           team.id = result.insertId;
-          team.name = req.body.name;
+          team.name = teamName;
+          team.password = req.body.password;
 
           res.send({result: 'success', err: '', json: team, length: 1});   
         }

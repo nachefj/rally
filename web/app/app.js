@@ -4,24 +4,22 @@ app.constant('appConfig', {apiUrl: 'http://192.168.70.159:3000/api'});
 app.config(function($routeProvider) {
   $routeProvider
     .when('/', {
-      templateUrl : 'app/register.html',
-      controller  : 'registerController'
+      templateUrl : 'app/register.html'
+    })
+    .when('/noaccess', {
+      templateUrl : 'app/noaccess.html'
     })
     .when('/login', {
-      templateUrl : 'app/login.html',
-      controller  : 'loginController'
+      templateUrl : 'app/login.html'
     })
     .when('/register', {
-      templateUrl : 'app/register.html',
-      controller  : 'registerController'
+      templateUrl : 'app/register.html'
     })
     .when('/score/:id', {
-      templateUrl : 'app/score.html',
-      controller  : 'scoreController'
+      templateUrl : 'app/score.html'
     })
     .when('/scoreboard', {
-      templateUrl : 'app/scoreboard.html',
-      controller  : 'scoreboardController'
+      templateUrl : 'app/scoreboard.html'
     })
     .when('/budgets', {
       templateUrl : 'app/budgets.html',
@@ -30,21 +28,81 @@ app.config(function($routeProvider) {
     .when('/budget/:id', {
       templateUrl : 'app/budget.html',
       controller  : 'budgetController'
+    })
+    .otherwise({
+      redirectTo: '/noaccess'
     });
 });
 
-app.controller('loginController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
-  function(compile, scope, http, location, appConfig) {
+app.factory('sessionService', ['$location', 
+  function (location) {
+    return {
+      getSession: function () {
+        return JSON.parse(localStorage.rally_session_id);
+      },
+
+      saveSession: function (team) {
+        localStorage.rally_session_id = JSON.stringify(team);
+      },
+
+      checkAccess: function () {
+        if (!localStorage.rally_session_id) {
+          location.path('/noaccess');
+        }
+      },
+
+      clearSession: function () {
+        localStorage.removeItem("rally_session_id");
+      }
+    }
+  }
+]);
+
+app.factory('appCheckService', function () {
+  return {
+    checkLocalStorage: function() {
+      if(typeof(Storage) == "undefined") {
+          return false;
+      }
+      return true;
+    }
+  }
+});
+
+app.controller('appCheckController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'appCheckService',
+  function(compile, scope, http, location, appConfig, appCheckService) {
+
+    if (!appCheckService.checkLocalStorage()) {
+      location.path('/login');
+      alert("LocalStorage is required, run this on a better browser!");
+    }
+
+  }
+]);
+
+app.controller('securityController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'sessionService', 
+  function(compile, scope, http, location, appConfig, sessionService) {
+
+    sessionService.checkAccess();
+
+  }
+]);
+
+app.controller('loginController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'sessionService', 
+  function(compile, scope, http, location, appConfig, sessionService) {
+
+    sessionService.clearSession();
     
     scope.onLoginClick = function() {
       var postResponse = http.post(appConfig.apiUrl + '/login', scope.team);
       postResponse.success(function(data, status, headers, config) {
         var team = data.json;
 
+        sessionService.saveSession(team);
+
         location.path('/score/'+team.id);
       });
       postResponse.error(function(data, status, headers, config) {
-        //TODO: hide popover
         if (!data) {
           appUtils.showError('Error registering');
         } else if (data.err && data.err == "ER_DUP_ENTRY") {
@@ -60,13 +118,17 @@ app.controller('loginController', ['$compile', '$scope', '$http', '$location', '
   }
 ]);
 
-app.controller('registerController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
-  function(compile, scope, http, location, appConfig) {
+app.controller('registerController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'sessionService', 
+  function(compile, scope, http, location, appConfig, sessionService) {
+
+    sessionService.clearSession();
 
     scope.onRegisterClick = function() {
       var postResponse = http.post(appConfig.apiUrl + '/register', scope.team);
       postResponse.success(function(data, status, headers, config) {
         var team = data.json;
+        
+        sessionService.saveSession(team);
 
         location.path('/score/'+team.id);
       });

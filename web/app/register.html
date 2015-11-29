@@ -25,7 +25,7 @@
     </div>
     <div class="form-group form-group-lg" ng-show="!registerForm.teamName.$error.required && !registerForm.password.$error.required && !registerForm.confirmPassword.$error.required && team.password == team.confirmPassword">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-primary btn-lg" ng-click="onRegisterClick()">Register</button>
+        <button type="button" class="btn btn-primary btn-lg" ng-click="onRegisterClick()">Register</button>
       </div>
     </div>
     <div class="form-group form-group-lg" ng-show="team.password && team.confirmPassword && team.password != team.confirmPassword">

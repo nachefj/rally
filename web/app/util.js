@@ -9,7 +9,7 @@ var appUtils = {
     } else if (errorMessage == "ECONNREFUSED") {
       $('#error').text("Failed to connect to database");
     } else {
-      $('#error').text(errorMessage);
+      $('#error').html(errorMessage);
     }
     
     $('#errorContainer').fadeIn();
@@ -19,16 +19,7 @@ var appUtils = {
     }
   },
 
-  checkLocalStorage: function() {
-    if(typeof(Storage) == "undefined") {
-        appUtils.showError("LocalStorage is required, run this on a better browser!", false);
-        return false;
-    } else {
-      return true;
-    }
-  },
-
-  checkSession: function() {
-    
+  hideError: function() {
+    $('#errorContainer').fadeOut();
   }
 }
