@@ -4,7 +4,7 @@ app.constant('appConfig', {apiUrl: 'http://192.168.70.159:3000/api'});
 app.config(function($routeProvider) {
   $routeProvider
     .when('/', {
-      templateUrl : 'app/register.html'
+      templateUrl : 'app/login.html'
     })
     .when('/noaccess', {
       templateUrl : 'app/noaccess.html'
@@ -53,6 +53,11 @@ app.factory('sessionService', ['$location',
 
       clearSession: function () {
         localStorage.removeItem("rally_session_id");
+      },
+
+      invalidateSession: function () {
+        this.clearSession();
+        location.path('/noaccess');
       }
     }
   }
@@ -149,8 +154,26 @@ app.controller('registerController', ['$compile', '$scope', '$http', '$location'
   }
 ]);
 
-app.controller('scoreController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
-  function(compile, scope, http, location, appConfig) {
+app.controller('scoreController', ['$compile', '$scope', '$http', '$location', 'appConfig', '$routeParams', 'sessionService', 
+  function(compile, scope, http, location, appConfig, routeParams, sessionService) {
+
+    var getResponse = http.post(appConfig.apiUrl + '/score/' + routeParams.id, sessionService.getSession());
+    getResponse.success(function(data, status, headers, config) {
+      scope.teamName = data.json.name;
+    });
+    getResponse.error(function(data, status, headers, config) {
+      if (status == 403) {
+        sessionService.invalidateSession();
+      }
+
+      if (!data) {
+        appUtils.showError('Error getting scores ['+routeParams.id+']');
+      } else if (data.err) {
+        appUtils.showError(data.err);
+      } else {
+        appUtils.showError(data);
+      }
+    });
     
   }
 ]);

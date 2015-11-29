@@ -35,37 +35,10 @@ var connectionPool = mysql.createPool({
   password        : mysql_password
 });
 
-function validateSession(session) {
-  connectionPool.getConnection(function(err, connection) {
-    if (err) {
-      console.error('CONNECTION ERROR: ', err);
-      res.statusCode = 503;
-      res.send({result: 'error', err: err.code});
-    } else {
-      connection.query('SELECT id, name, password FROM team WHERE name = ?', session.name, function(err, rows, fields) {
-        if (err) {
-          console.error(err);
-          return false;
-        } else {
-          if (rows.length == 0) {
-            return false;
-          } else if (rows[0].password != session.password) {
-            return false
-          } 
-          
-          return true;
-        }
-
-        connection.release();
-      });
-    }
-  });
-}
-
 router.post('/login', function(req, res) {
   connectionPool.getConnection(function(err, connection) {
     if (err) {
-      console.error('CONNECTION ERROR: ', err);
+      console.error('SQL CONNECTION ERROR: ', err);
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
@@ -99,7 +72,7 @@ router.post('/login', function(req, res) {
 router.post('/register', function(req, res) {
   connectionPool.getConnection(function(err, connection) {
     if (err) {
-      console.error('CONNECTION ERROR: ', err);
+      console.error('SQL CONNECTION ERROR: ', err);
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
@@ -123,6 +96,65 @@ router.post('/register', function(req, res) {
       });
     }
   })
+});
+
+router.post('/score/:id', function(req, res) {
+
+  //check if session is valid
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('SQL CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('SELECT id, name, password FROM team WHERE id = ? AND name = ?', [req.body.id, req.body.name], function(err, rows, fields) {
+        if (err) {
+          console.error(err);
+          res.statusCode = 500;
+          res.send({result: 'error', err: err.code});
+        } else {
+          if (rows.length == 0) {
+            res.statusCode = 403;
+            res.send({result: 'error', err: 'invalid session'});
+          } else if (rows[0].password != req.body.password) {
+            res.statusCode = 403;
+            res.send({result: 'error', err: 'invalid session'});
+          } 
+        }
+        connection.release();
+
+        //return if error, we don't need to proceed with other data fetch
+        if (res.statusCode == 500 || res.statusCode == 403) {
+          return;
+        }
+
+        //get team info
+        connectionPool.getConnection(function(err, connection) {
+          if (err) {
+            console.error('CONNECTION ERROR: ', err);
+            res.statusCode = 503;
+            res.send({result: 'error', err: err.code});
+          } else {
+            connection.query('SELECT id, name FROM team WHERE id = '+req.params.id, function(err, rows, fields) {
+              if (err) {
+                console.error(err);
+                res.statusCode = 500;
+                res.send({result: 'error', err: err.code});
+              }
+
+              var team = new Object();
+              team.id = rows[0].id;
+              team.name = rows[0].name;
+
+              res.send({result: 'success', err: '', json: team, length: rows.length});
+              connection.release();
+            });
+          }
+        })
+
+      });
+    }
+  });
 });
 
 router.get('/budgets', function(req, res) {
