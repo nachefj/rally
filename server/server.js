@@ -139,37 +139,27 @@ router.post('/score/:id', function(req, res) {
             res.send({result: 'error', err: 'invalid session'});
           } 
         }
-        connection.release();
-
+        
         //return if error, we don't need to proceed with other data fetch
         if (res.statusCode == 500 || res.statusCode == 403) {
+          connection.release();
           return;
         }
 
-        //get team info
-        connectionPool.getConnection(function(err, connection) {
+        connection.query('SELECT id, name FROM team WHERE id = '+req.params.id, function(err, rows, fields) {
           if (err) {
-            console.error('CONNECTION ERROR: ', err);
-            res.statusCode = 503;
+            console.error(err);
+            res.statusCode = 500;
             res.send({result: 'error', err: err.code});
-          } else {
-            connection.query('SELECT id, name FROM team WHERE id = '+req.params.id, function(err, rows, fields) {
-              if (err) {
-                console.error(err);
-                res.statusCode = 500;
-                res.send({result: 'error', err: err.code});
-              }
-
-              var team = new Object();
-              team.id = rows[0].id;
-              team.name = rows[0].name;
-
-              res.send({result: 'success', err: '', json: team, length: rows.length});
-              connection.release();
-            });
           }
-        })
 
+          var team = new Object();
+          team.id = rows[0].id;
+          team.name = rows[0].name;
+
+          res.send({result: 'success', err: '', json: team, length: rows.length});
+          connection.release();
+        });
       });
     }
   });
