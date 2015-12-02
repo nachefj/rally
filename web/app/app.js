@@ -12,22 +12,11 @@ app.config(function($routeProvider) {
     .when('/login', {
       templateUrl : 'app/login.html'
     })
-    .when('/register', {
-      templateUrl : 'app/register.html'
-    })
     .when('/score/:id', {
       templateUrl : 'app/score.html'
     })
     .when('/scoreboard', {
       templateUrl : 'app/scoreboard.html'
-    })
-    .when('/budgets', {
-      templateUrl : 'app/budgets.html',
-      controller  : 'budgetsController'
-    })
-    .when('/budget/:id', {
-      templateUrl : 'app/budget.html',
-      controller  : 'budgetController'
     })
     .otherwise({
       redirectTo: '/noaccess'
@@ -79,8 +68,7 @@ app.controller('mainAppController', ['$compile', '$scope', '$http', '$location',
     }
 
     scope.appTitle = "Redline Racing";
-    scope.isLoggedIn = sessionService.checkAccess();
-
+    
     scope.onLogoutClick = function () {
       sessionService.clearSession();
       location.path('/login');
@@ -120,36 +108,7 @@ app.controller('loginController', ['$compile', '$scope', '$http', '$location', '
         if (!data) {
           appUtils.showError('Error registering');
         } else if (data.err && data.err == "ER_DUP_ENTRY") {
-          appUtils.showError("Team " + scope.team.name + " already exists");
-        } else if (data.err) {
-          appUtils.showError(data.err);
-        } else {
-          appUtils.showError(data);
-        }
-      });
-    };
-
-  }
-]);
-
-app.controller('registerController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'sessionService', 
-  function(compile, scope, http, location, appConfig, sessionService) {
-
-    scope.onRegisterClick = function() {
-      var postResponse = http.post(appConfig.apiUrl + '/register', scope.team);
-      postResponse.success(function(data, status, headers, config) {
-        var team = data.json;
-        
-        sessionService.saveSession(team);
-
-        location.path('/score/'+team.id);
-      });
-      postResponse.error(function(data, status, headers, config) {
-        //TODO: hide popover
-        if (!data) {
-          appUtils.showError('Error registering');
-        } else if (data.err && data.err == "ER_DUP_ENTRY") {
-          appUtils.showError("Team " + scope.team.name + " already exists");
+          appUtils.showError("Team with table number " + scope.team.tableNumber + " already exists");
         } else if (data.err) {
           appUtils.showError(data.err);
         } else {
@@ -164,9 +123,15 @@ app.controller('registerController', ['$compile', '$scope', '$http', '$location'
 app.controller('scoreController', ['$compile', '$scope', '$http', '$location', 'appConfig', '$routeParams', 'sessionService', 
   function(compile, scope, http, location, appConfig, routeParams, sessionService) {
 
+    scope.onSwitchTeamClick = function() {
+      sessionService.clearSession();
+      location.path('/login');
+    }
+
+    //fetch data
     var getResponse = http.post(appConfig.apiUrl + '/score/' + routeParams.id, sessionService.getSession());
     getResponse.success(function(data, status, headers, config) {
-      scope.teamName = data.json.name;
+      scope.teamName = "Region: " + data.json.regionNumber + " Table: " + data.json.tableNumber;
     });
     getResponse.error(function(data, status, headers, config) {
       if (status == 403) {
@@ -225,6 +190,17 @@ app.controller('scoreboardController', ['$compile', '$scope', '$http', '$locatio
     
   }
 ]);
+
+
+
+
+
+
+
+
+
+
+
 
 app.controller('budgetsController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
   function(compile, scope, http, location, appConfig) {

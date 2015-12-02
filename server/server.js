@@ -42,64 +42,43 @@ router.post('/login', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('SELECT id, name, password FROM team WHERE name = ?', req.body.name, function(err, rows, fields) {
+      connection.query('SELECT id, region_number, table_number FROM team WHERE table_number = ?', req.body.tableNumber, function(err, rows, fields) {
         if (err) {
           console.error(err);
           res.statusCode = 500;
           res.send({result: 'error', err: err.code});
         } else {
           if (rows.length == 0) {
-            res.statusCode = 403;
-            res.send({result: 'error', err: 'Invalid team name or password'});  
-          } else if (rows[0].password != req.body.password) {
-            res.statusCode = 403;
-            res.send({result: 'error', err: 'Invalid team name or password'});  
+            connection.query('INSERT INTO team(region_number, table_number) VALUES(?, ?)', [req.body.regionNumber, req.body.tableNumber], function(err, result) {
+              if (err) {
+                console.error(err);
+                res.statusCode = 500;
+                res.send({result: 'error', err: err.code});
+              } else {
+                var team = new Object();
+                team.id = result.insertId;
+                team.regionNumber = req.body.regionNumber;
+                team.tableNumber = req.body.tableNumber;
+
+                res.send({result: 'success', err: '', json: team, length: 1});   
+              }
+            });
           } else {
             var team = new Object();
             team.id = rows[0].id;
-            team.name = rows[0].name;
-            team.password = rows[0].password;
+            team.regionNumber = rows[0].region_number;
+            team.tableNumber = rows[0].table_number;
             res.send({result: 'success', err: '', json: team, length: rows.length});  
           }
         }
-
         connection.release();
       });
     }
-  })
-});
-
-router.post('/register', function(req, res) {
-  connectionPool.getConnection(function(err, connection) {
-    if (err) {
-      console.error('SQL CONNECTION ERROR: ', err);
-      res.statusCode = 503;
-      res.send({result: 'error', err: err.code});
-    } else {
-      var teamName = req.body.name;
-
-      connection.query('INSERT INTO team(name, password) VALUES(?, ?)', [req.body.name, req.body.password], function(err, result) {
-        if (err) {
-          console.error(err);
-          res.statusCode = 500;
-          res.send({result: 'error', err: err.code});
-        } else {
-          var team = new Object();
-          team.id = result.insertId;
-          team.name = teamName;
-          team.password = req.body.password;
-
-          res.send({result: 'success', err: '', json: team, length: 1});   
-        }
-        
-        connection.release();
-      });
-    }
-  })
+  });
 });
 
 function validateRequest(req) {
-  if (!req.body || !req.body.id || !req.body.name || !req.body.password) {
+  if (!req.body || !req.body.id || !req.body.regionNumber || !req.body.tableNumber) {
     return false;
   }
 
@@ -118,14 +97,13 @@ router.post('/score/:id', function(req, res) {
     return;
   }
 
-  //check if session is valid
   connectionPool.getConnection(function(err, connection) {
     if (err) {
       console.error('SQL CONNECTION ERROR: ', err);
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('SELECT id, name, password FROM team WHERE id = ? AND name = ?', [req.body.id, req.body.name], function(err, rows, fields) {
+      connection.query('SELECT id, region_number, table_number FROM team WHERE id = ?', req.params.id, function(err, rows, fields) {
         if (err) {
           console.error(err);
           res.statusCode = 500;
@@ -134,32 +112,16 @@ router.post('/score/:id', function(req, res) {
           if (rows.length == 0) {
             res.statusCode = 403;
             res.send({result: 'error', err: 'invalid session'});
-          } else if (rows[0].password != req.body.password) {
-            res.statusCode = 403;
-            res.send({result: 'error', err: 'invalid session'});
-          } 
-        }
-        
-        //return if error, we don't need to proceed with other data fetch
-        if (res.statusCode == 500 || res.statusCode == 403) {
-          connection.release();
-          return;
-        }
+          } else {
+            var team = new Object();
+            team.id = rows[0].id;
+            team.regionNumber = rows[0].region_number;
+            team.tableNumber = rows[0].table_number;
 
-        connection.query('SELECT id, name FROM team WHERE id = '+req.params.id, function(err, rows, fields) {
-          if (err) {
-            console.error(err);
-            res.statusCode = 500;
-            res.send({result: 'error', err: err.code});
+            res.send({result: 'success', err: '', json: team, length: rows.length});
           }
-
-          var team = new Object();
-          team.id = rows[0].id;
-          team.name = rows[0].name;
-
-          res.send({result: 'success', err: '', json: team, length: rows.length});
-          connection.release();
-        });
+        }
+        connection.release();
       });
     }
   });

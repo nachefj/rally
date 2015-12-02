@@ -1,0 +1,27 @@
+<div class="container" ng-controller="loginController">
+
+  <div class="page-header">
+    <h1>Enter Section and Table Numbers</h1>
+  </div>
+
+  <form name="loginForm" class="form-horizontal" novalidate="novalidate">
+    <div class="form-group form-group-lg">
+      <label for="teamName" class="col-sm-2 control-label">Team Name</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" name="name" placeholder="Team Name" maxlength="100" ng-model="team.name" autocomplete="off" required>
+      </div>
+    </div>
+    <div class="form-group form-group-lg">
+      <label for="password" class="col-sm-2 control-label">Password</label>
+      <div class="col-sm-10">
+        <input type="password" class="form-control" name="password" placeholder="Password" maxlength="10" ng-model="team.password" required>
+      </div>
+    </div>
+    <div class="form-group form-group-lg" ng-show="!loginForm.teamName.$error.required && !loginForm.password.$error.required">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="button" class="btn btn-primary btn-lg" ng-click="onLoginClick()">Login</button>
+      </div>
+    </div>
+  </form>
+
+</div>
