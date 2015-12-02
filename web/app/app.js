@@ -1,5 +1,5 @@
 var app = angular.module('app', ['ngRoute']);
-app.constant('appConfig', {apiUrl: 'http://192.168.136.233:3000/api'});
+app.constant('appConfig', {apiUrl: 'http://localhost:3000/api'});
 
 app.config(function($routeProvider) {
   $routeProvider
@@ -47,17 +47,13 @@ app.factory('sessionService', ['$location',
 
       checkAccess: function () {
         if (!localStorage.rally_session_id) {
-          location.path('/noaccess');
+          return false;
         }
+        return true;
       },
 
       clearSession: function () {
         localStorage.removeItem("rally_session_id");
-      },
-
-      invalidateSession: function () {
-        this.clearSession();
-        location.path('/noaccess');
       }
     }
   }
@@ -74,12 +70,20 @@ app.factory('appCheckService', function () {
   }
 });
 
-app.controller('appCheckController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'appCheckService',
-  function(compile, scope, http, location, appConfig, appCheckService) {
+app.controller('mainAppController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'appCheckService', 'sessionService', 
+  function(compile, scope, http, location, appConfig, appCheckService, sessionService) {
 
     if (!appCheckService.checkLocalStorage()) {
-      location.path('/login');
+      location.path('/register');
       alert("LocalStorage is required, run this on a better browser!");
+    }
+
+    scope.appTitle = "Redline Racing";
+    scope.isLoggedIn = sessionService.checkAccess();
+
+    scope.onLogoutClick = function () {
+      sessionService.clearSession();
+      location.path('/login');
     }
 
   }
@@ -88,7 +92,10 @@ app.controller('appCheckController', ['$compile', '$scope', '$http', '$location'
 app.controller('securityController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'sessionService', 
   function(compile, scope, http, location, appConfig, sessionService) {
 
-    sessionService.checkAccess();
+    if (!sessionService.checkAccess()) {
+      sessionService.clearSession();
+      location.path('/noaccess');
+    }
 
   }
 ]);
@@ -96,8 +103,10 @@ app.controller('securityController', ['$compile', '$scope', '$http', '$location'
 app.controller('loginController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'sessionService', 
   function(compile, scope, http, location, appConfig, sessionService) {
 
-    sessionService.clearSession();
-    
+    if (sessionService.checkAccess()) {
+      location.path('/score/'+sessionService.getSession().id);
+    }
+
     scope.onLoginClick = function() {
       var postResponse = http.post(appConfig.apiUrl + '/login', scope.team);
       postResponse.success(function(data, status, headers, config) {
@@ -125,8 +134,6 @@ app.controller('loginController', ['$compile', '$scope', '$http', '$location', '
 
 app.controller('registerController', ['$compile', '$scope', '$http', '$location', 'appConfig', 'sessionService', 
   function(compile, scope, http, location, appConfig, sessionService) {
-
-    sessionService.clearSession();
 
     scope.onRegisterClick = function() {
       var postResponse = http.post(appConfig.apiUrl + '/register', scope.team);
@@ -163,7 +170,8 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
     });
     getResponse.error(function(data, status, headers, config) {
       if (status == 403) {
-        sessionService.invalidateSession();
+        sessionService.clearSession();
+        location.path('/noaccess');
       }
 
       if (!data) {

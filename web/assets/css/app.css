@@ -1,5 +1,49 @@
-.page-header {
-  margin-top: 0px;
+body {
+  color: #444345;
+}
+
+.navbar-brand {
+  color: white !important;
+}
+
+.navbar-default {
+  background-color: #94BD49;
+}
+
+.btn-primary {
+  background-color: #94BD49;
+  border: 1px solid #94BD49;
+}
+
+.btn-primary:hover {
+  background-color: #444345;
+  border: 1px solid #444345;
+}
+
+.btn-primary:active {
+  background-color: #444345;
+  border: 1px solid #444345;
+}
+
+.btn-primary:focus {
+  background-color: #444345;
+  border: 1px solid #444345;
+}
+
+a {
+  color: #CC6203;
+}
+
+a:hover {
+  color: #CC6203;
+}
+
+.navbar-link {
+  color: #CC6203 !important;
+}
+
+.navbar-link:hover {
+  color: #CC6203 !important;
 }
 
 #grandTotalBoard {

@@ -2,11 +2,27 @@
 
   <div ng-controller="scoreController">
 
-    <h1>{{teamName}}</h1>
+    <div class="page-header">
+      <h2>{{teamName}}</h2>
+    </div>
 
-    <p><input type="number"/><input type="button" value="Add"/></p>
+    <form name="scoreForm" class="form-inline">
+      <div class="form-group form-group-lg">
+        <input type="number" class="form-control" name="scoreEntry" placeholder="Enter New Score" maxlength="5" ng-model="scoreEntry" autocomplete="off" required>
+      </div>
+      <button ng-show="!scoreForm.scoreEntry.$error.required" type="button" class="btn btn-primary btn-lg" ng-click="onAddScoreClick()">Add</button>
+    </form>
 
-    <h2>Team Scores</h2>
+    <br/>
+
+    <table class="table table-striped">
+      <tr>
+        <th>Score</th>
+      </tr>
+      <tr>
+        <td>100</td>
+      </tr>
+    </table>
 
   </div>
 
