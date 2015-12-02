@@ -77,12 +77,8 @@ router.post('/login', function(req, res) {
   });
 });
 
-function validateRequest(req) {
-  if (!req.body || !req.body.id || !req.body.regionNumber || !req.body.tableNumber) {
-    return false;
-  }
-
-  if (req.params.id && req.body.id != req.params.id) {
+function validateRequest(session, teamId) {
+  if (session.id != teamId) {
     return false;
   }
 
@@ -90,8 +86,7 @@ function validateRequest(req) {
 }
 
 router.post('/score/:id', function(req, res) {
-
-  if (!validateRequest(req)) {
+  if (!validateRequest(req.body.session, req.params.id)) {
     res.statusCode = 403;
     res.send({result: 'error', err: 'invalid request'});
     return;
