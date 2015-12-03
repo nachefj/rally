@@ -85,6 +85,7 @@ function validateRequest(session, teamId) {
   return true;
 }
 
+// Get scores
 router.post('/team/:id/scores', function(req, res) {
   if (!validateRequest(req.body.session, req.params.id)) {
     res.statusCode = 403;
@@ -114,6 +115,7 @@ router.post('/team/:id/scores', function(req, res) {
 
             for (var i = 0; i < rows.length; i++) {
               var score = new Object();
+              score.id = rows[i].id;
               score.roundNumber = rows[i].round_number;
               score.scoreValue = rows[i].score_value;
               scores.push(score);
@@ -129,6 +131,35 @@ router.post('/team/:id/scores', function(req, res) {
   });
 });
 
+// Update scores
+router.put('/team/:id/scores', function(req, res) {
+  if (!validateRequest(req.body.session, req.params.id)) {
+    res.statusCode = 403;
+    res.send({result: 'error', err: 'invalid request'});
+    return;
+  }
+
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('SQL CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('UPDATE score SET score_value = ? WHERE id = ?', [req.body.scoreValue, req.body.scoreId], function(err, rows, fields) {
+        if (err) {
+          console.error(err);
+          res.statusCode = 500;
+          res.send({result: 'error', err: err.code});
+        } else {
+            res.send({result: 'success', err: ''});
+        }
+        connection.release();
+      });
+    }
+  });
+});
+
+// Add scores
 router.post('/team/:id/scores/add', function(req, res) {
   if (!validateRequest(req.body.session, req.params.id)) {
     res.statusCode = 403;
@@ -142,7 +173,7 @@ router.post('/team/:id/scores/add', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('INSERT INTO score(team_id, round_number, score_value) VALUES(?, ?, ?)', [req.params.id, req.body.score.nextRoundNumber, req.body.score.scoreValue], function(err, result) {
+      connection.query('INSERT INTO score(team_id, round_number, score_value) VALUES(?, ?, ?)', [req.params.id, req.body.score.roundNumber, req.body.score.scoreValue], function(err, result) {
         if (err) {
           console.error(err);
           res.statusCode = 500;
