@@ -123,31 +123,69 @@ app.controller('loginController', ['$compile', '$scope', '$http', '$location', '
 app.controller('scoreController', ['$compile', '$scope', '$http', '$location', 'appConfig', '$routeParams', 'sessionService', 
   function(compile, scope, http, location, appConfig, routeParams, sessionService) {
 
+    // Set team name
+    scope.teamName = "Region: " + sessionService.getSession().regionNumber + " Table: " + sessionService.getSession().tableNumber;
+
+    // Fetch Scores
+    var fetchScores = function () {
+
+      //fetch data
+      var payload = new Object();
+      payload.session = sessionService.getSession();
+
+      var getResponse = http.post(appConfig.apiUrl + '/team/' + routeParams.id + '/scores', payload);
+      getResponse.success(function(data, status, headers, config) {
+        // list scores
+        // set max number on scope
+      });
+      getResponse.error(function(data, status, headers, config) {
+        if (status == 403) {
+          sessionService.clearSession();
+          location.path('/noaccess');
+        }
+
+        if (!data) {
+          appUtils.showError('Error getting scores ['+routeParams.id+']');
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+
+    }
+    fetchScores();
+
     scope.onSwitchTeamClick = function() {
       sessionService.clearSession();
       location.path('/login');
     }
 
-    //fetch data
-    var getResponse = http.post(appConfig.apiUrl + '/score/' + routeParams.id, sessionService.getSession());
-    getResponse.success(function(data, status, headers, config) {
-      scope.teamName = "Region: " + data.json.regionNumber + " Table: " + data.json.tableNumber;
-    });
-    getResponse.error(function(data, status, headers, config) {
-      if (status == 403) {
-        sessionService.clearSession();
-        location.path('/noaccess');
-      }
+    scope.onAddScoreClick = function() {
+      var payload = new Object();
+      payload.session = sessionService.getSession();
 
-      if (!data) {
-        appUtils.showError('Error getting scores ['+routeParams.id+']');
-      } else if (data.err) {
-        appUtils.showError(data.err);
-      } else {
-        appUtils.showError(data);
-      }
-    });
-    
+      var score = new Object();
+      score.value = scope.scoreEntry;
+      score.roundNumber = scope.roundNumber;
+
+      payload.score = score;
+
+      var postScoreResponse = http.post(appConfig.apiUrl + '/team/' + routeParams.id + '/scores/add', payload);
+      postScoreResponse.success(function(data, status, headers, config) {
+        fetchScores();
+      });
+      postScoreResponse.error(function(data, status, headers, config) {
+        if (!data) {
+          appUtils.showError('Error adding score');
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+    }
+
   }
 ]);
 

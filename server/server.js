@@ -85,7 +85,7 @@ function validateRequest(session, teamId) {
   return true;
 }
 
-router.post('/score/:id', function(req, res) {
+router.post('/team/:id/scores', function(req, res) {
   if (!validateRequest(req.body.session, req.params.id)) {
     res.statusCode = 403;
     res.send({result: 'error', err: 'invalid request'});
@@ -98,13 +98,15 @@ router.post('/score/:id', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('SELECT id, region_number, table_number FROM team WHERE id = ?', req.params.id, function(err, rows, fields) {
+      connection.query('SELECT id, team_id, round_number FROM score WHERE team_id = ?', req.params.id, function(err, rows, fields) {
         if (err) {
           console.error(err);
           res.statusCode = 500;
           res.send({result: 'error', err: err.code});
         } else {
+          var scores = new Object();
           if (rows.length == 0) {
+            scores.maxRoundNumber = 0;
             res.statusCode = 403;
             res.send({result: 'error', err: 'invalid session'});
           } else {
@@ -121,6 +123,40 @@ router.post('/score/:id', function(req, res) {
     }
   });
 });
+
+router.post('/team/:id/scores/add', function(req, res) {
+  if (!validateRequest(req.body.session, req.params.id)) {
+    res.statusCode = 403;
+    res.send({result: 'error', err: 'invalid request'});
+    return;
+  }
+
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('SQL CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('INSERT INTO score(team_id, round_number) VALUES(?, ?)', [req.body.score.value, req.body.score.roundNumber], function(err, result) {
+        if (err) {
+          console.error(err);
+          res.statusCode = 500;
+          res.send({result: 'error', err: err.code});
+        } else {
+          var team = new Object();
+          team.id = result.insertId;
+          team.regionNumber = req.body.regionNumber;
+          team.tableNumber = req.body.tableNumber;
+
+          res.send({result: 'success', err: '', json: team, length: 1});   
+        }
+      });
+    }
+
+  });
+});
+
+
 
 router.get('/budgets', function(req, res) {
   connectionPool.getConnection(function(err, connection) {
