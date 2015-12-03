@@ -98,24 +98,29 @@ router.post('/team/:id/scores', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('SELECT id, team_id, round_number FROM score WHERE team_id = ?', req.params.id, function(err, rows, fields) {
+      connection.query('SELECT id, team_id, round_number, score_value FROM score WHERE team_id = ? ORDER BY round_number', req.params.id, function(err, rows, fields) {
         if (err) {
           console.error(err);
           res.statusCode = 500;
           res.send({result: 'error', err: err.code});
         } else {
-          var scores = new Object();
+          var scoresData = new Object();
           if (rows.length == 0) {
-            scores.maxRoundNumber = 0;
-            res.statusCode = 403;
-            res.send({result: 'error', err: 'invalid session'});
+            scoresData.nextRoundNumber = 1;
+            res.send({result: 'success', err: '', json: scoresData, length: 0});
           } else {
-            var team = new Object();
-            team.id = rows[0].id;
-            team.regionNumber = rows[0].region_number;
-            team.tableNumber = rows[0].table_number;
+            scoresData.nextRoundNumber = rows[rows.length - 1].round_number + 1;
+            var scores = [];
 
-            res.send({result: 'success', err: '', json: team, length: rows.length});
+            for (var i = 0; i < rows.length; i++) {
+              var score = new Object();
+              score.roundNumber = rows[i].round_number;
+              score.scoreValue = rows[i].score_value;
+              scores.push(score);
+            }
+
+            scoresData.scores = scores;
+            res.send({result: 'success', err: '', json: scoresData, length: rows.length});
           }
         }
         connection.release();
@@ -137,18 +142,13 @@ router.post('/team/:id/scores/add', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('INSERT INTO score(team_id, round_number) VALUES(?, ?)', [req.body.score.value, req.body.score.roundNumber], function(err, result) {
+      connection.query('INSERT INTO score(team_id, round_number, score_value) VALUES(?, ?, ?)', [req.params.id, req.body.score.nextRoundNumber, req.body.score.scoreValue], function(err, result) {
         if (err) {
           console.error(err);
           res.statusCode = 500;
           res.send({result: 'error', err: err.code});
         } else {
-          var team = new Object();
-          team.id = result.insertId;
-          team.regionNumber = req.body.regionNumber;
-          team.tableNumber = req.body.tableNumber;
-
-          res.send({result: 'success', err: '', json: team, length: 1});   
+          res.send({result: 'success', err: '', json: {}, length: 0});   
         }
       });
     }

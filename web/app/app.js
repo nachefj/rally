@@ -12,7 +12,7 @@ app.config(function($routeProvider) {
     .when('/login', {
       templateUrl : 'app/login.html'
     })
-    .when('/score/:id', {
+    .when('/team/:id/scores', {
       templateUrl : 'app/score.html'
     })
     .when('/scoreboard', {
@@ -92,7 +92,7 @@ app.controller('loginController', ['$compile', '$scope', '$http', '$location', '
   function(compile, scope, http, location, appConfig, sessionService) {
 
     if (sessionService.checkAccess()) {
-      location.path('/score/'+sessionService.getSession().id);
+      location.path('/team/'+sessionService.getSession().id + '/scores');
     }
 
     scope.onLoginClick = function() {
@@ -102,7 +102,7 @@ app.controller('loginController', ['$compile', '$scope', '$http', '$location', '
 
         sessionService.saveSession(team);
 
-        location.path('/score/'+team.id);
+        location.path('/team/'+team.id+'/scores');
       });
       postResponse.error(function(data, status, headers, config) {
         if (!data) {
@@ -135,8 +135,14 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
 
       var getResponse = http.post(appConfig.apiUrl + '/team/' + routeParams.id + '/scores', payload);
       getResponse.success(function(data, status, headers, config) {
+        var scoresData = data.json
         // list scores
         // set max number on scope
+        console.log("scoresData.nextRoundNumber = " + scoresData.nextRoundNumber);
+
+        scope.nextRoundNumber = scoresData.nextRoundNumber;
+
+        console.log("scope.nextRoundNumber = " + scope.nextRoundNumber);
       });
       getResponse.error(function(data, status, headers, config) {
         if (status == 403) {
@@ -166,8 +172,8 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
       payload.session = sessionService.getSession();
 
       var score = new Object();
-      score.value = scope.scoreEntry;
-      score.roundNumber = scope.roundNumber;
+      score.scoreValue = scope.scoreEntry;
+      score.nextRoundNumber = scope.nextRoundNumber;
 
       payload.score = score;
 
