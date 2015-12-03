@@ -21,9 +21,9 @@
         <th>Round</th>
         <th>Score</th>
       </tr>
-      <tr>
-        <td>1</td>
-        <td>100</td>
+      <tr ng-repeat="score in scores">
+        <td>{{score.roundNumber}}</td>
+        <td>{{score.scoreValue}}</td>
       </tr>
     </table>
 

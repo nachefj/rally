@@ -136,13 +136,12 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
       var getResponse = http.post(appConfig.apiUrl + '/team/' + routeParams.id + '/scores', payload);
       getResponse.success(function(data, status, headers, config) {
         var scoresData = data.json
-        // list scores
-        // set max number on scope
-        console.log("scoresData.nextRoundNumber = " + scoresData.nextRoundNumber);
 
+        // set scores list
+        scope.scores = scoresData.scores;
+
+        // Set next available round number
         scope.nextRoundNumber = scoresData.nextRoundNumber;
-
-        console.log("scope.nextRoundNumber = " + scope.nextRoundNumber);
       });
       getResponse.error(function(data, status, headers, config) {
         if (status == 403) {
@@ -179,6 +178,7 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
 
       var postScoreResponse = http.post(appConfig.apiUrl + '/team/' + routeParams.id + '/scores/add', payload);
       postScoreResponse.success(function(data, status, headers, config) {
+        scope.scoreEntry = '';
         fetchScores();
       });
       postScoreResponse.error(function(data, status, headers, config) {
