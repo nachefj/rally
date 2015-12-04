@@ -1,12 +1,13 @@
 <div class="container-fluid" style="margin: 20px;" ng-controller="scoreboardController">
 
   <div id="grandTotalBoard">
-    <h1>PCC Product Development Team Total: <span id="grandTotalScore">{{grandTotal.score_total}}</span></h1>
+    <h1>PCC Product Development Team Total</h1>
+    <h1><span id="grandTotalScore">{{grandTotal.score_total}} / 227200</span></h1>
   </div>
 
   <br/>
 
-  <h1>Top 3 Tables</h1>
+  <h2>Top 3 Tables</h2>
   <hr/>
   <table class="topScoreTable">
     <tr ng-repeat="tableTotal in tableTotals" on-finish-render="ngRepeatFinished">
@@ -20,9 +21,11 @@
     </tr>
   </table>
 
+  <h4 ng-show="!tableTotals.length">No table scores yet.</h4>
+
   <br/>
 
-  <h1>Top 3 Regions</h1>
+  <h2>Top 3 Regions</h2>
   <hr/>
   <table class="topScoreTable">
     <tr ng-repeat="regionTotal in regionTotals" on-finish-render="ngRepeatFinished">
@@ -35,5 +38,7 @@
       </td>
     </tr>
   </table>
+
+  <h4 ng-show="!regionTotals.length">No region scores yet.</h4>
 
 </div>

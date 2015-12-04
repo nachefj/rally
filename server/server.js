@@ -241,7 +241,7 @@ router.get('/scores/totals/grand', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('SELECT sum(score_value) AS score_total FROM score', 
+      connection.query('SELECT IFNULL(SUM(score_value), 0) AS score_total FROM score', 
         function(err, rows, fields) {
           if (err) {
             console.error(err);

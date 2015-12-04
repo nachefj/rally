@@ -108,12 +108,6 @@ app.controller('mainAppController', ['$compile', '$scope', '$http', '$location',
 
     scope.appTitle = "Redline Racing";
 
-    if (location.path() == '/scoreboard') {
-      scope.hideHeader = true;
-    } else {
-      scope.hideHeader = false;
-    }
-    
     scope.onLogoutClick = function () {
       sessionService.clearSession();
       location.path('/login');
@@ -170,6 +164,14 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
 
     // Set team name
     scope.teamName = "Region: " + sessionService.getSession().regionNumber + " Table: " + sessionService.getSession().tableNumber;
+
+    //expose super user functions
+    if (location.search().su) {
+      scope.amISuperUser = true;
+    } else {
+      scope.amISuperUser = false;
+    }
+    
 
     // Fetch Scores
     var fetchScores = function () {
@@ -270,8 +272,13 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
   }
 ]);
 
-app.controller('scoreboardController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
-  function(compile, scope, http, location, appConfig) {
+app.controller('scoreboardController', ['$compile', '$scope', '$http', '$location', 'appConfig', '$route', 
+  function(compile, scope, http, location, appConfig, route) {
+
+    //auto refresh logic
+    window.setInterval(function () {
+      window.location.reload();
+    }, 60000);
 
     var fetchRegionTotals = function() {
       var getResponse = http.get(appConfig.apiUrl + '/scores/totals/regions');
@@ -329,17 +336,20 @@ app.controller('scoreboardController', ['$compile', '$scope', '$http', '$locatio
 
     //This is needed because we need to ensure that all ng-repeats have completed rendering and loading 
     //before calculating and animating scorebars
+    var latch = 0;
+    
     scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
-      //add latch counter here
-
-      calculateTableScoreIncrements();
-      calculateRegionScoreIncrements();
-      increment();
+      if (latch == 1) {
+        calculateTableScoreIncrements();
+        calculateRegionScoreIncrements();
+        increment();
+      }
+      latch++;
     });
 
     var TABLE_SCORE_SCALE = 0.2405;
     var REGION_SCORE_SCALE = 0.04;
-    var ANIMATION_TIME = 1000;
+    var ANIMATION_TIME = 5000;
     var ITERATION_TIMEOUT = 10; //MIN 10, MAX 1000
     var MAX_ITERATIONS = (ANIMATION_TIME/ITERATION_TIMEOUT);
     

@@ -4,7 +4,7 @@
 
     <div class="page-header">
       <h2>{{teamName}}</h2>
-      <a ng-click="onSwitchTeamClick()">Switch Team</a>
+      <a ng-show="amISuperUser" ng-click="onSwitchTeamClick()">Switch Team</a>
     </div>
 
     <form name="scoreForm" class="form-inline">
@@ -16,18 +16,30 @@
 
     <br/>
 
-    <table class="table table-striped">
+    <table class="table table-striped" ng-show="scores.length">
       <tr>
         <th>Round</th>
         <th>Score</th>
       </tr>
       <tr ng-repeat="score in scores">
         <td>{{score.roundNumber}}</td>
-        <td><div contenteditable="true" ng-model="score.scoreValue" ng-change="onScoreChange(this, score.id, {{score.scoreValue}}, score.scoreValue)"></div></td>
+        <td contenteditable="true" ng-model="score.scoreValue" ng-change="onScoreChange(this, score.id, {{score.scoreValue}}, score.scoreValue)" class="pcc-link"></td>
       </tr>
     </table>
 
-    <span ng-show="!scores.length">No score found. Start by entering the score for round 1 above.</span>
+    <br/>
+
+    <div>
+      <hr/>
+      <h4>Instructions</h4>
+      <ul>
+        <li>Before entering scores, <strong>please ensure that you have entered the correct region and table numbers</strong>.</li>
+        <li>Once the first round is complete, you will be given a score to enter in the box above.</li>
+        <li>You will need to do so after you complete each round. The round number will be automatically incremented.</li>
+        <li>If you make a mistake entering a score, tap on the score value and edit it.</li>
+        <li>If you have any questions, please talk to your marshal.</li>
+      </ul>
+    </div>
 
   </div>
 

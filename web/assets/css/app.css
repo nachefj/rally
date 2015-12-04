@@ -26,6 +26,10 @@ body {
   background-color: #444345;
 }
 
+.pcc-link {
+  color: #CC6203;
+}
+
 .navbar-brand {
   color: white !important;
 }
@@ -78,12 +82,12 @@ a:hover {
 }
 
 #grandTotalBoard {
-  padding: 5px;
+  
 }
 
 #grandTotalBoard h1 {
   text-align: center;
-  font-size: 60px;
+  font-size: 42px;
 }
 
 #grandTotalScore {
@@ -91,6 +95,7 @@ a:hover {
   color: white;
   padding-left: 10px;
   padding-right: 10px;
+  font-size: 52px;
 }
 
 .topScoreTable {
@@ -98,18 +103,18 @@ a:hover {
 }
 
 .scoreBar {
-  margin: 8px;
+  margin: 6px;
   margin-left: 20px;
-  height: 90px;
+  height: 75px;
 }
 
 .teamName {
-  font-size: 26px;
+  font-size: 24px;
   text-align: right;
   font-weight: bold;
 }
 
 .teamScore {
-  font-size: 32px;
+  font-size: 28px;
   text-align: right;
 }
