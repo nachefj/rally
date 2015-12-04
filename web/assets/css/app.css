@@ -2,12 +2,43 @@ body {
   color: #444345;
 }
 
+.pcc-blue-background {
+  background-color: #6396B4;
+}
+
+.pcc-green-background {
+  background-color: #94BD49;
+}
+
+.pcc-orange-background {
+  background-color: #CC6203;
+}
+
+.pcc-purple-background {
+  background-color: #8982BE;
+}
+
+.pcc-light-grey-background {
+  background-color: #EFEFEF;
+}
+
+.pcc-dark-grey-background {
+  background-color: #444345;
+}
+
 .navbar-brand {
   color: white !important;
 }
 
 .navbar-default {
   background-color: #94BD49;
+}
+
+.highlight {
+  background-color: #CC6203;
+  color: white;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
 .btn-primary {
@@ -47,52 +78,38 @@ a:hover {
 }
 
 #grandTotalBoard {
-  background-color: #EFEFEF;
-  border-radius: 5px;
+  padding: 5px;
+}
+
+#grandTotalBoard h1 {
+  text-align: center;
+  font-size: 60px;
 }
 
 #grandTotalScore {
-  font-size: 60px;
-  text-align: center;
-  font-family: futura;
+  background-color: #444345;
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
-#topContenderContainer {
-  margin: 20px;
+.topScoreTable {
+  margin-left: 15px;
 }
 
 .scoreBar {
-  margin-left: 10px;
+  margin: 8px;
+  margin-left: 20px;
   height: 90px;
 }
 
 .teamName {
-  font-family: garamond;
   font-size: 26px;
   text-align: right;
+  font-weight: bold;
 }
 
 .teamScore {
   font-size: 32px;
   text-align: right;
-}
-
-.firstBackground {
-  background-color: #77DD77;
-}
-
-.secondBackground {
-  background-color: #779ECB;
-}
-
-.thirdBackground {
-  background-color: #FFB347;
-}
-
-.fourthBackground {
-  background-color: #CB99C9;
-}
-
-.fifthBackground {
-  background-color: #FFD1DC;
 }

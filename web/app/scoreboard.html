@@ -1,58 +1,39 @@
-<div class="container" ng-controller="scoreboardController">
+<div class="container-fluid" style="margin: 20px;" ng-controller="scoreboardController">
 
   <div id="grandTotalBoard">
-    <h1 style="text-align: center;">Grand Total: <span id="grandTotalScore">1362</span></h1>
+    <h1>PCC Product Development Team Total: <span id="grandTotalScore">{{grandTotal.score_total}}</span></h1>
   </div>
 
-  <h2>Top 5 Contenders</h2>
-  <table id="topContenderContainer">
-    <tr>
+  <br/>
+
+  <h1>Top 3 Tables</h1>
+  <hr/>
+  <table class="topScoreTable">
+    <tr ng-repeat="tableTotal in tableTotals" on-finish-render="ngRepeatFinished">
       <td nowrap>
-        <div class="teamName">This is a long team name</div>
-        <div class="teamScore">1000</div>
+        <div class="teamName">Table {{tableTotal.table_number}}</div>
+        <div class="teamScore">{{tableTotal.score_total}}</div>
       </td>
       <td>
-        <div data-score="1000" class="scoreBar firstBackground" style="width: 0px;"></div>
-      </td>
-    </tr>
-    <tr>
-      <td nowrap>
-        <div class="teamName">Team 2</div>
-        <div class="teamScore">800</div>
-      </td>
-      <td>
-        <div data-score="800" class="scoreBar secondBackground" style="width: 0px;"></div>
-      </td>
-    </tr>
-    <tr>
-      <td nowrap>
-        <div class="teamName">Team 3</div>
-        <div class="teamScore">245</div>
-      </td>
-      <td>
-        <div data-score="245" class="scoreBar thirdBackground" style="width: 0px;"></div>
-      </td>
-    </tr>
-    <tr>
-      <td nowrap>
-        <div class="teamName">Team 4</div>
-        <div class="teamScore">177</div>
-      </td>
-      <td>
-        <div data-score="177" class="scoreBar fourthBackground" style="width: 0px;"></div>
-      </td>
-    </tr>
-    <tr>
-      <td nowrap>
-        <div class="teamName">Team 5</div>
-        <div class="teamScore">40</div>
-      </td>
-      <td>
-        <div data-score="40" class="scoreBar fifthBackground" style="width: 0px;"></div>
+        <div data-score="{{ tableTotal.score_total }}" class="scoreBar tableScoreBar pcc-orange-background" style="width: 0px;"></div>
       </td>
     </tr>
   </table>
 
-  <h2>The Others</h2>
+  <br/>
+
+  <h1>Top 3 Regions</h1>
+  <hr/>
+  <table class="topScoreTable">
+    <tr ng-repeat="regionTotal in regionTotals" on-finish-render="ngRepeatFinished">
+      <td nowrap>
+        <div class="teamName">Region {{regionTotal.region_number}}</div>
+        <div class="teamScore">{{regionTotal.score_total}}</div>
+      </td>
+      <td>
+        <div data-score="{{ regionTotal.score_total }}" class="scoreBar regionScoreBar pcc-blue-background" style="width: 0px;"></div>
+      </td>
+    </tr>
+  </table>
 
 </div>

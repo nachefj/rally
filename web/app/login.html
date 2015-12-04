@@ -1,7 +1,7 @@
 <div class="container" ng-controller="loginController">
 
   <div class="page-header">
-    <h2>Enter your table and region numbers</h2>    
+    <h2>Enter your <span class="highlight">region</span> and <span class="highlight">table</span> numbers</h2>    
   </div>
 
   <form name="loginForm" class="form-horizontal" novalidate="novalidate">
@@ -19,7 +19,7 @@
     </div>
     <div class="form-group form-group-lg" ng-show="!loginForm.regionNumber.$error.required && !loginForm.tableNumber.$error.required">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="button" class="btn btn-primary btn-lg" ng-click="onLoginClick()">Login</button>
+        <button type="button" class="btn btn-primary btn-lg" ng-click="onLoginClick()">Start</button>
       </div>
     </div>
   </form>

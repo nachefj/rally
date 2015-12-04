@@ -27,6 +27,19 @@ app.directive('contenteditable', function() {
     }
 });
 
+app.directive('onFinishRender', function ($timeout) {
+  return {
+    restrict: 'A',
+    link: function (scope, element, attr) {
+      if (scope.$last === true) {
+        $timeout(function () {
+          scope.$emit('ngRepeatFinished');
+        });
+      }
+    }
+  }
+});
+
 app.config(function($routeProvider) {
   $routeProvider
     .when('/', {
@@ -254,22 +267,93 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
 app.controller('scoreboardController', ['$compile', '$scope', '$http', '$location', 'appConfig', 
   function(compile, scope, http, location, appConfig) {
 
-    var SCALE = 0.3;
+    var fetchRegionTotals = function() {
+      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/regions');
+      getResponse.success(function(data, status, headers, config) {
+        scope.regionTotals = data.json;
+      });
+      getResponse.error(function(data, status, headers, config) {
+        if (!data) {
+          appUtils.showError('Error fetching region totals');
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+    }
+    fetchRegionTotals();
+
+    var fetchTableTotals = function() {
+      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/tables');
+      getResponse.success(function(data, status, headers, config) {
+        scope.tableTotals = data.json;
+      });
+      getResponse.error(function(data, status, headers, config) {
+        if (!data) {
+          appUtils.showError('Error fetching table totals');
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+    }
+    fetchTableTotals();
+
+    var fetchGrandTotal = function() {
+      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/grand');
+      getResponse.success(function(data, status, headers, config) {
+        scope.grandTotal = data.json;
+      });
+      getResponse.error(function(data, status, headers, config) {
+        if (!data) {
+          appUtils.showError('Error fetching grand total');
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+    }
+    fetchGrandTotal();
+
+
+    // Hacky logic to show scorebars
+
+    //This is needed because we need to ensure that all ng-repeats have completed rendering and loading 
+    //before calculating and animating scorebars
+    scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+      //add latch counter here
+
+      calculateTableScoreIncrements();
+      calculateRegionScoreIncrements();
+      increment();
+    });
+
+    var TABLE_SCORE_SCALE = 0.2405;
+    var REGION_SCORE_SCALE = 0.04;
     var ANIMATION_TIME = 1000;
     var ITERATION_TIMEOUT = 10; //MIN 10, MAX 1000
     var MAX_ITERATIONS = (ANIMATION_TIME/ITERATION_TIMEOUT);
     
     var iterationCount = 0;
     var scoreBars;
-
-    calculateIncrements();
-    increment();
     
-    function calculateIncrements() {
-      var scoreBars = document.getElementsByClassName("scoreBar");
+    function calculateTableScoreIncrements() {
+      var scoreBars = document.getElementsByClassName("tableScoreBar");
 
       for (var i=0; i<scoreBars.length; i++) {
-        var delta = SCALE * (scoreBars[i].getAttribute("data-score")/MAX_ITERATIONS);
+        var delta = TABLE_SCORE_SCALE * (scoreBars[i].getAttribute("data-score")/MAX_ITERATIONS);
+        scoreBars[i].setAttribute("data-increment",  delta);
+      }
+    }
+
+    function calculateRegionScoreIncrements() {
+      var scoreBars = document.getElementsByClassName("regionScoreBar");
+
+      for (var i=0; i<scoreBars.length; i++) {
+        var delta = REGION_SCORE_SCALE * (scoreBars[i].getAttribute("data-score")/MAX_ITERATIONS);
         scoreBars[i].setAttribute("data-increment",  delta);
       }
     }

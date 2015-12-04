@@ -187,5 +187,74 @@ router.post('/team/:id/scores/add', function(req, res) {
   });
 });
 
+// Get Top Scores by Region (Hard coded to top 3 for now)
+router.get('/scores/totals/regions', function(req, res) {
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('SQL CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('SELECT region_number, sum(score_value) AS score_total FROM score JOIN team ON score.team_id = team.id GROUP BY region_number ORDER BY score_total DESC, region_number ASC LIMIT 3', 
+        function(err, rows, fields) {
+          if (err) {
+            console.error(err);
+            res.statusCode = 500;
+            res.send({result: 'error', err: err.code});
+          } else {
+            res.send({result: 'success', err: '', json: rows, length: rows.length}); 
+          } 
+        });
+    }
+    connection.release();
+  });
+});
+
+// Get Top Scores by Table (Hard coded to top 3 for now)
+router.get('/scores/totals/tables', function(req, res) {
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('SQL CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('SELECT table_number, sum(score_value) AS score_total FROM score JOIN team ON score.team_id = team.id GROUP BY table_number ORDER BY score_total DESC, table_number ASC LIMIT 3', 
+        function(err, rows, fields) {
+          if (err) {
+            console.error(err);
+            res.statusCode = 500;
+            res.send({result: 'error', err: err.code});
+          } else {
+            res.send({result: 'success', err: '', json: rows, length: rows.length}); 
+          } 
+        });
+    }
+    connection.release();
+  });
+});
+
+// Get Grand Total
+router.get('/scores/totals/grand', function(req, res) {
+  connectionPool.getConnection(function(err, connection) {
+    if (err) {
+      console.error('SQL CONNECTION ERROR: ', err);
+      res.statusCode = 503;
+      res.send({result: 'error', err: err.code});
+    } else {
+      connection.query('SELECT sum(score_value) AS score_total FROM score', 
+        function(err, rows, fields) {
+          if (err) {
+            console.error(err);
+            res.statusCode = 500;
+            res.send({result: 'error', err: err.code});
+          } else {
+            res.send({result: 'success', err: '', json: rows[0], length: 1}); 
+          } 
+        });
+    }
+    connection.release();
+  });
+});
+
 app.listen(port);
 console.log('Listening on port ' + port);
