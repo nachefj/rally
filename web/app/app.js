@@ -107,6 +107,12 @@ app.controller('mainAppController', ['$compile', '$scope', '$http', '$location',
     }
 
     scope.appTitle = "Redline Racing";
+
+    if (location.path() == '/scoreboard') {
+      scope.hideHeader = true;
+    } else {
+      scope.hideHeader = false;
+    }
     
     scope.onLogoutClick = function () {
       sessionService.clearSession();

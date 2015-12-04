@@ -10,9 +10,9 @@
     <link href="assets/css/app.css" rel="stylesheet">
   </head>
   <body>
-    
-    <nav class="navbar navbar-default navbar-static-top">
-      <div class="container" ng-controller="mainAppController">
+
+    <nav class="navbar navbar-default navbar-static-top" ng-controller="mainAppController" ng-show="!hideHeader">
+      <div class="container">
         <div class="navbar-header">
           <a class="navbar-brand" href="#/">{{appTitle}}</a>
         </div>
