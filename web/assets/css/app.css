@@ -118,3 +118,7 @@ a:hover {
   font-size: 28px;
   text-align: right;
 }
+
+.bottomNavigation {
+  text-align: right;
+}

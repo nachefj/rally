@@ -1,0 +1,43 @@
+<div class="container" ng-controller="leaderboardController">
+  
+  <h2>Region Totals:</h2>
+
+  <table class="table table-striped" ng-show="regionTotals.length">
+    <tr>
+      <th>Region</th>
+      <th>Total</th>
+    </tr>
+       <tr ng-repeat="regionTotal in regionTotals">
+        <td>{{regionTotal.region_number}}</td>
+        <td>{{regionTotal.score_total}}</td>
+    </tr>
+  </table>
+
+  <br/>
+
+  <h2>Team Totals:</h2>
+
+  <table class="table table-striped" ng-show="tableTotals.length">
+    <tr>
+      <th>Team</th>
+      <th>Region</th>
+      <th>Total</th>
+    </tr>
+       <tr ng-repeat="tableTotal in tableTotals">
+        <td>Table {{tableTotal.table_number}}</td>
+        <td>{{tableTotal.region_number}}</td>
+        <td>{{tableTotal.score_total}}</td>
+    </tr>
+  </table>
+
+  <br/>
+
+  <div>
+    <div class="bottomNavigation">
+      <a class="pcc-link" href="#/">Back</a>
+    </div>      
+  </div>
+
+  <br/>
+
+</div>

@@ -187,7 +187,7 @@ router.post('/team/:id/scores/add', function(req, res) {
   });
 });
 
-// Get Top Scores by Region (Hard coded to top 3 for now)
+// Get Top Scores by Region
 router.get('/scores/totals/regions', function(req, res) {
   connectionPool.getConnection(function(err, connection) {
     if (err) {
@@ -195,7 +195,13 @@ router.get('/scores/totals/regions', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('SELECT region_number, sum(score_value) AS score_total FROM score JOIN team ON score.team_id = team.id GROUP BY region_number ORDER BY score_total DESC, region_number ASC LIMIT 3', 
+      console.log(req.query);
+      var query = 'SELECT region_number, sum(score_value) AS score_total FROM score JOIN team ON score.team_id = team.id GROUP BY region_number ORDER BY score_total DESC, region_number ASC';
+      var limit = req.query.limit;
+      if (limit) {
+        query += ' LIMIT ' + limit;
+      }
+      connection.query(query, 
         function(err, rows, fields) {
           if (err) {
             console.error(err);
@@ -210,7 +216,7 @@ router.get('/scores/totals/regions', function(req, res) {
   });
 });
 
-// Get Top Scores by Table (Hard coded to top 3 for now)
+// Get Top Scores by Table
 router.get('/scores/totals/tables', function(req, res) {
   connectionPool.getConnection(function(err, connection) {
     if (err) {
@@ -218,7 +224,12 @@ router.get('/scores/totals/tables', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      connection.query('SELECT table_number, sum(score_value) AS score_total FROM score JOIN team ON score.team_id = team.id GROUP BY table_number ORDER BY score_total DESC, table_number ASC LIMIT 3', 
+      var query = 'SELECT table_number, region_number, sum(score_value) AS score_total FROM score JOIN team ON score.team_id = team.id GROUP BY table_number ORDER BY score_total DESC, table_number ASC';
+      var limit = req.query.limit;
+      if (limit) {
+        query += ' LIMIT ' + limit;
+      }
+      connection.query(query, 
         function(err, rows, fields) {
           if (err) {
             console.error(err);

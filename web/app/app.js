@@ -57,6 +57,9 @@ app.config(function($routeProvider) {
     .when('/scoreboard', {
       templateUrl : 'app/scoreboard.html'
     })
+    .when('/leaderboard', {
+      templateUrl : 'app/leaderboard.html'
+    })
     .otherwise({
       redirectTo: '/noaccess'
     });
@@ -281,7 +284,7 @@ app.controller('scoreboardController', ['$compile', '$scope', '$http', '$locatio
     }, 60000);
 
     var fetchRegionTotals = function() {
-      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/regions');
+      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/regions?limit=3');
       getResponse.success(function(data, status, headers, config) {
         scope.regionTotals = data.json;
       });
@@ -298,7 +301,7 @@ app.controller('scoreboardController', ['$compile', '$scope', '$http', '$locatio
     fetchRegionTotals();
 
     var fetchTableTotals = function() {
-      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/tables');
+      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/tables?limit=3');
       getResponse.success(function(data, status, headers, config) {
         scope.tableTotals = data.json;
       });
@@ -388,5 +391,53 @@ app.controller('scoreboardController', ['$compile', '$scope', '$http', '$locatio
       }
     }
     
+  }
+]);
+
+app.controller('leaderboardController', ['$compile', '$scope', '$http', '$location', 'appConfig', '$routeParams', 'sessionService', 
+  function(compile, scope, http, location, appConfig, routeParams, sessionService) {
+
+    // Set team name
+    scope.teamName = "Region: " + sessionService.getSession().regionNumber + " Table: " + sessionService.getSession().tableNumber;
+
+    var fetchTableTotals = function() {
+      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/tables');
+      getResponse.success(function(data, status, headers, config) {
+        scope.tableTotals = data.json;
+      });
+      getResponse.error(function(data, status, headers, config) {
+        if (!data) {
+          appUtils.showError('Error fetching table totals');
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+    }
+    fetchTableTotals();
+
+    var fetchRegionTotals = function() {
+      var getResponse = http.get(appConfig.apiUrl + '/scores/totals/regions');
+      getResponse.success(function(data, status, headers, config) {
+        scope.regionTotals = data.json;
+      });
+      getResponse.error(function(data, status, headers, config) {
+        if (!data) {
+          appUtils.showError('Error fetching region totals');
+        } else if (data.err) {
+          appUtils.showError(data.err);
+        } else {
+          appUtils.showError(data);
+        }
+      });
+    }
+    fetchRegionTotals();
+
+    scope.onBackClick = function() {
+      location.path('/team/'+sessionService.getSession().id + '/scores');
+    }
+
+
   }
 ]);
