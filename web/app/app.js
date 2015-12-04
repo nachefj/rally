@@ -397,8 +397,9 @@ app.controller('scoreboardController', ['$compile', '$scope', '$http', '$locatio
 app.controller('leaderboardController', ['$compile', '$scope', '$http', '$location', 'appConfig', '$routeParams', 'sessionService', 
   function(compile, scope, http, location, appConfig, routeParams, sessionService) {
 
-    // Set team name
-    scope.teamName = "Region: " + sessionService.getSession().regionNumber + " Table: " + sessionService.getSession().tableNumber;
+    // Set current table and region for highlighting
+    scope.currentTableNumber = sessionService.getSession().tableNumber;
+    scope.currentRegionNumber = sessionService.getSession().regionNumber;
 
     var fetchTableTotals = function() {
       var getResponse = http.get(appConfig.apiUrl + '/scores/totals/tables');
