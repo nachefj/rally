@@ -195,7 +195,6 @@ router.get('/scores/totals/regions', function(req, res) {
       res.statusCode = 503;
       res.send({result: 'error', err: err.code});
     } else {
-      console.log(req.query);
       var query = 'SELECT region_number, sum(score_value) AS score_total FROM score JOIN team ON score.team_id = team.id GROUP BY region_number ORDER BY score_total DESC, region_number ASC';
       var limit = req.query.limit;
       if (limit) {

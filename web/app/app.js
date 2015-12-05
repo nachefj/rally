@@ -109,8 +109,6 @@ app.controller('mainAppController', ['$compile', '$scope', '$http', '$location',
       alert("LocalStorage is required, run this on a better browser!");
     }
 
-    scope.appTitle = "Redline Racing";
-
     scope.onLogoutClick = function () {
       sessionService.clearSession();
       location.path('/login');
@@ -166,7 +164,8 @@ app.controller('scoreController', ['$compile', '$scope', '$http', '$location', '
   function(compile, scope, http, location, appConfig, routeParams, sessionService) {
 
     // Set team name
-    scope.teamName = "Region: " + sessionService.getSession().regionNumber + " Table: " + sessionService.getSession().tableNumber;
+    scope.teamRegionNumber = sessionService.getSession().regionNumber;
+    scope.teamTableNumber = sessionService.getSession().tableNumber;
 
     //expose super user functions
     if (location.search().su) {

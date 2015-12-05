@@ -23,10 +23,10 @@
       <th>Region</th>
       <th>Total</th>
     </tr>
-       <tr ng-repeat="tableTotal in tableTotals" data-ng-class="{success: tableTotal.table_number == {{currentTableNumber}}}">
-        <td>Table {{tableTotal.table_number}}</td>
-        <td>{{tableTotal.region_number}}</td>
-        <td>{{tableTotal.score_total}}</td>
+    <tr ng-repeat="tableTotal in tableTotals" data-ng-class="{success: tableTotal.table_number == {{currentTableNumber}}}">
+      <td>Table {{tableTotal.table_number}}</td>
+      <td>{{tableTotal.region_number}}</td>
+      <td>{{tableTotal.score_total}}</td>
     </tr>
   </table>
 

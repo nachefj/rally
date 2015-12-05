@@ -2,10 +2,10 @@
 
   <div ng-controller="scoreController">
 
-    <div class="page-header">
-      <h2>{{teamName}}</h2>
-      <a ng-show="amISuperUser" ng-click="onSwitchTeamClick()">Switch Team</a>
-    </div>
+    <h2>Region <span class="highlight">{{teamRegionNumber}}</span> Table <span class="highlight">{{teamTableNumber}}</span></h2>
+    <a ng-show="amISuperUser" ng-click="onSwitchTeamClick()">Switch Team</a>
+    
+    <hr/>
 
     <form name="scoreForm" class="form-inline">
       <div class="form-group form-group-lg">

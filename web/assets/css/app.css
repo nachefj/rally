@@ -1,5 +1,6 @@
 body {
   color: #444345;
+  font-family: 'Avenir'
 }
 
 .pcc-blue-background {
@@ -28,6 +29,11 @@ body {
 
 .pcc-link {
   color: #CC6203;
+  cursor: pointer;
+}
+
+.pcc-link:hover {
+  text-decoration: underline;
 }
 
 .navbar-brand {
@@ -67,10 +73,12 @@ body {
 
 a {
   color: #CC6203;
+  cursor: pointer;
 }
 
 a:hover {
   color: #CC6203;
+  cursor: pointer;
 }
 
 .navbar-link {
@@ -95,7 +103,7 @@ a:hover {
   color: white;
   padding-left: 10px;
   padding-right: 10px;
-  font-size: 52px;
+  font-size: 50px;
 }
 
 .topScoreTable {
